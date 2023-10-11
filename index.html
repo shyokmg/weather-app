@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App</title>
     <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <script
-      src="https://code.jquery.com/jquery-3.5.1.min.js"
-      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js"
+      integrity="sha256-iu/zLUB+QgISXBLCW/mcDi/rnf4m4uEDO0wauy76x7U="
       crossorigin="anonymous"
     ></script>
-  </head>
-  <body class="min-100-vh flex-column">
-    <header class="p-5 text-center text-white bg-primary">
-      <h1>Server-Side APIs</h1>
-    </header>
-    <main class="flex-row justify-center align-center col-auto p-4 bg-light">
-      <section class="card card-rounded col-7 bg-white">
-        <header class="card-header text-center">
-          <h2 class="text-white">
-            Fetch Options
-          </h2>
-        </header>
-        <div class="p-3"></div>
-        <footer class="card-footer text-center">
-          Open the console in your browser to see the responses!
-        </footer>
-      </section>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+</head>
+
+<body class="min-100-vh flex-column">
+    <aside>
+        <label for="autocomplete"> Search for a City:</label>
+        <input id="autocomplete" placeholder="Sydney">
+        <button id="search">Search</button>
+    </aside>
+    <main>
+        <section id="currentForecast">
+
+        </section>
+        <section id="fiveDayForecast">
+
+        </section>
     </main>
+
     <script src="assets/js/script.js"></script>
-  </body>
+</body>
+
 </html>
