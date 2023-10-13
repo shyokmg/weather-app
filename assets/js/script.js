@@ -1,4 +1,5 @@
 const apiKey = '382e4071686a9c9505887e47a96575f7';
+var savedCities = ['Sydney'];
 
 function currentForecast(lat, lon, appid) {
     let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${appid}`;
@@ -11,7 +12,7 @@ function currentForecast(lat, lon, appid) {
     })
         .then(function (data) {
             console.log('CURRENT DAY FORECAST');
-            console.log(data);
+            // console.log(data);
             getCurrentWeather(data);
         })
 }
@@ -27,7 +28,7 @@ function fiveDayForecast(lat, lon, appid) {
     })
         .then(function (data) {
             console.log('FIVE DAY FORECAST');
-            // console.log(data);
+            console.log(data);
             let fiveResults = getFiveDayWeather(data);
             generateFiveDayForecast(fiveResults);
         })
@@ -44,11 +45,20 @@ function geoCoding(cityname, limit, appid) {
         }
     })
         .then(function (data) {
-            // console.log(data);
+            console.log(data);
             let lat = data[0].lat
             let lon = data[0].lon
+            let saveCity = data[0].name
+            if(savedCities.includes(saveCity)){
+                console.log('YES');
+            } else {
+                console.log('NO');
+                savedCities.push(saveCity);
+                localStorage.setItem('savedCities', JSON.stringify(savedCities));
+            }
             currentForecast(lat, lon, apiKey)
             fiveDayForecast(lat, lon, apiKey)
+            createHistory(savedCities);
 
         })
 }
@@ -56,17 +66,17 @@ function geoCoding(cityname, limit, appid) {
 function getCurrentWeather(data) {
     let cityName = data.name;
     let dt = dayjs.unix(data.dt).format('MM/DD/YYYY');
-    let icon = data.weather[0].icon;
+    let icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
     let temp = data.main.temp;
     let wind = data.wind.speed;
     let humid = data.main.humidity;
 
     $('#cityname').text(`${cityName} (${dt})`);
-    $('#mainIcon').val();
+    $('#mainIcon').attr('src', icon);
     $('#mainTemp').text(`Temp ${temp} °C`);
     $('#mainWind').text(`Wind: ${wind} km/h`);
     $('#mainHumid').text(`Humidity: ${humid}%`);
-
+    
 
 
 }
@@ -102,7 +112,7 @@ function generateFiveDayForecast(data) {
     for (let i = 0; i < data.dt.length; i++) {
         let fiveList = $('<li>').addClass('box');
         let date = $('<li>').text(data.dt[i]);
-        let icon = $(`<li><img src="https://openweathermap.org/img/wn/${data.iconID[i]}@2x.png><img></li>`);
+        let icon = $(`<li><img src="https://openweathermap.org/img/wn/${data.iconID[i]}@2x.png"/></li>`);
         let temp = $('<li>').text(`Temp: ${data.temp[i]}°C`);
         let wind = $('<li>').text(`Wind: ${data.wind[i]} km/h`);
         let humid = $('<li>').text(`Humidity: ${data.humid[i]}%`);
@@ -113,9 +123,9 @@ function generateFiveDayForecast(data) {
 
 }
 function filterFiveResults(arr) {
-    var someArr = [];
-    var count = 0;
-    for (var i = 0; i < arr.length; i++) {
+    let someArr = [];
+    let count = 0;
+    for (let i = 0; i < arr.length; i++) {
         if (arr[count] !== arr[i]) {
             someArr.push(i);
             count = i;
@@ -125,14 +135,10 @@ function filterFiveResults(arr) {
 }
 
 
-
-
-
-
-
-
 $('#search').on('click', function () {
     let searchInput = $('#autocomplete').val();
+    $('#weatherList').empty();
+    $('#historyList').empty();
     if (searchInput !== "") {
         console.log(searchInput);
         geoCoding(searchInput, 1, apiKey);
@@ -141,8 +147,40 @@ $('#search').on('click', function () {
 });
 
 
+
 $('#autocomplete').autocomplete({
-    source: ["Sydney", "Melbourne", "Brisbane", "Manila", "Tokyo", "Atlanta", "New York"]
+    source: savedCities
 });
-// geoCoding('Sydney,', 1, apiKey);
-// openWeather();
+
+
+
+function createHistory(arr){
+    let historyList = $('#historyList');
+    for (let i = 0; i < arr.length; i++){
+        let cityButton = $(`<li><button class="cityButton" data-city=${savedCities[i]}>${savedCities[i]}</button></li>`);
+        historyList.append(cityButton);
+    }
+    $('.cityButton').on('click', function(event){
+        let element = event.target;
+        console.log('PRESSED');
+        if(element.matches('button')){
+            $('#weatherList').empty();
+            $('#historyList').empty();
+            let city = element.dataset.city;
+            geoCoding(city, 1, apiKey);
+        }
+    });
+}
+
+function init(){
+    geoCoding("Sydney", 1, apiKey);
+    let check = JSON.parse(localStorage.getItem('savedCities'));
+    if (check!==null){
+        savedCities = check;
+    } else {
+        localStorage.setItem('savedCities', JSON.stringify(savedCities));
+    }
+
+    
+}
+init();
