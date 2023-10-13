@@ -135,7 +135,8 @@ function filterFiveResults(arr) {
 }
 
 
-$('#search').on('click', function () {
+$('#search').on('click', function (event) {
+    event.preventDefault();
     let searchInput = $('#autocomplete').val();
     $('#weatherList').empty();
     $('#historyList').empty();
