@@ -1,0 +1,20 @@
+header {
+    text-align: center;
+}
+
+ul, li {
+    list-style: none;
+}
+
+.icons {
+    height: 40px;
+    width: 40px;
+}
+
+#weatherList {
+    padding-left: 0;
+}
+
+#cityname {
+    margin: 0
+}

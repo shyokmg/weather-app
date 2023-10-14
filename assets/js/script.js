@@ -11,8 +11,6 @@ function currentForecast(lat, lon, appid) {
         }
     })
         .then(function (data) {
-            console.log('CURRENT DAY FORECAST');
-            // console.log(data);
             getCurrentWeather(data);
         })
 }
@@ -27,8 +25,6 @@ function fiveDayForecast(lat, lon, appid) {
         }
     })
         .then(function (data) {
-            console.log('FIVE DAY FORECAST');
-            console.log(data);
             let fiveResults = getFiveDayWeather(data);
             generateFiveDayForecast(fiveResults);
         })
@@ -45,17 +41,13 @@ function geoCoding(cityname, limit, appid) {
         }
     })
         .then(function (data) {
-            console.log(data);
             let lat = data[0].lat
             let lon = data[0].lon
             let saveCity = data[0].name
-            if(savedCities.includes(saveCity)){
-                console.log('YES');
-            } else {
-                console.log('NO');
+            if(!savedCities.includes(saveCity)){
                 savedCities.push(saveCity);
                 localStorage.setItem('savedCities', JSON.stringify(savedCities));
-            }
+            } 
             currentForecast(lat, lon, apiKey)
             fiveDayForecast(lat, lon, apiKey)
             createHistory(savedCities);
@@ -72,7 +64,7 @@ function getCurrentWeather(data) {
     let humid = data.main.humidity;
 
     $('#cityname').text(`${cityName} (${dt})`);
-    $('#mainIcon').attr('src', icon);
+    $('#mainIcon').addClass('icons').attr('src', icon);
     $('#mainTemp').text(`Temp ${temp} °C`);
     $('#mainWind').text(`Wind: ${wind} km/h`);
     $('#mainHumid').text(`Humidity: ${humid}%`);
@@ -101,8 +93,6 @@ function getFiveDayWeather(data) {
         filterObj.wind.push(fiveObj.wind[filter[i]]);
         filterObj.iconID.push(fiveObj.iconID[filter[i]]);
     }
-    console.log(fiveObj);
-    console.log(filterObj);
     return filterObj;
 }
 
@@ -110,13 +100,15 @@ function getFiveDayWeather(data) {
 function generateFiveDayForecast(data) {
     var list = $('#weatherList');
     for (let i = 0; i < data.dt.length; i++) {
-        let fiveList = $('<li>').addClass('box');
-        let date = $('<li>').text(data.dt[i]);
-        let icon = $(`<li><img src="https://openweathermap.org/img/wn/${data.iconID[i]}@2x.png"/></li>`);
+        let fiveList = $('<li>').addClass('col fs-8');
+        let div = $('<div class="border border-secondary bg-dark text-white p-2">')
+        let date = $('<li class="fw-bold">').text(data.dt[i]);
+        let icon = $(`<li><img class="icons" src="https://openweathermap.org/img/wn/${data.iconID[i]}@2x.png"/></li>`);
         let temp = $('<li>').text(`Temp: ${data.temp[i]}°C`);
         let wind = $('<li>').text(`Wind: ${data.wind[i]} km/h`);
         let humid = $('<li>').text(`Humidity: ${data.humid[i]}%`);
-        fiveList.append(date, icon, temp, wind, humid);       
+        div.append(date, icon, temp, wind, humid);       
+        fiveList.append(div);
         list.append(fiveList);
     }
     
@@ -141,7 +133,6 @@ $('#search').on('click', function (event) {
     $('#weatherList').empty();
     $('#historyList').empty();
     if (searchInput !== "") {
-        console.log(searchInput);
         geoCoding(searchInput, 1, apiKey);
     }
     $('#autocomplete').val('');
@@ -158,12 +149,11 @@ $('#autocomplete').autocomplete({
 function createHistory(arr){
     let historyList = $('#historyList');
     for (let i = 0; i < arr.length; i++){
-        let cityButton = $(`<li><button class="cityButton" data-city=${savedCities[i]}>${savedCities[i]}</button></li>`);
+        let cityButton = $(`<button class="btn btn-secondary btn-sm cityButton" data-city=${savedCities[i]}>${savedCities[i]}</button>`);
         historyList.append(cityButton);
     }
     $('.cityButton').on('click', function(event){
         let element = event.target;
-        console.log('PRESSED');
         if(element.matches('button')){
             $('#weatherList').empty();
             $('#historyList').empty();
