@@ -34,7 +34,7 @@ function fiveDayForecast(lat, lon, appid) {
 
 // function for getting geo location using API
 function geoCoding(cityname, limit, appid) {
-    let url = `http://api.openweathermap.org/geo/1.0/direct?q=${cityname}&limit=${limit}&appid=${appid}`;
+    let url = `https://api.openweathermap.org/geo/1.0/direct?q=${cityname}&limit=${limit}&appid=${appid}`;
 
     fetch(url).then(function (response) {
         if (response.status === 200) {
